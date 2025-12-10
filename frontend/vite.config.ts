@@ -6,6 +6,7 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [svelte(), tailwindcss()],
+  base: "/timely/",
   resolve: {
     alias: {
       $lib: path.resolve("./src/lib"),
@@ -13,11 +14,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // Any request starting with /api will be sent to FastAPI
-      "/api": {
+      // Any request starting with /timely/api will be sent to FastAPI
+      "/timely/api": {
         target: "http://127.0.0.1:8000",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        rewrite: (path) => path.replace(/^\/timely\/api/, ""),
       },
     },
   },

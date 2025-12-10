@@ -49,7 +49,7 @@ export interface Task {
   last_completed_at?: string;
 }
 
-const API_BASE = "/api"; // proxied by vite
+const API_BASE = "/timely/api"; // proxied by vite
 
 async function request<T>(
   endpoint: string,
