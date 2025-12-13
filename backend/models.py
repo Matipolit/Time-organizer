@@ -15,7 +15,6 @@ class TaskType(str, Enum):
 class TaskStatus(str, Enum):
     TODO = "todo"
     DONE = "done"
-    # We don't need 'Archived' yet. If a chore is done, it resets to 'Todo' with new date.
 
 
 # The T-Shirt Sizes (Abstractions for Time)
@@ -73,7 +72,6 @@ class Task(SQLModel, table=True):
     )
 
 
-# Response model that includes children for API responses
 class TaskRead(SQLModel):
     id: int
     title: str
@@ -90,3 +88,13 @@ class TaskRead(SQLModel):
     created_at: datetime
     last_completed_at: Optional[datetime] = None
     children: List["TaskRead"] = []
+
+
+class TaskUpdate(SQLModel):
+    title: Optional[str]
+    description: Optional[str]
+    task_type: Optional[TaskType]
+    scheduled_date: Optional[datetime] = None
+    effort: Optional[EffortLevel] = None
+    deadline: Optional[datetime] = None
+    recurrence_interval_days: Optional[int] = None

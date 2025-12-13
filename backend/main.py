@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models import Task, TaskRead, TaskStatus, TaskType
+from models import Task, TaskRead, TaskStatus, TaskType, TaskUpdate
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, SQLModel, create_engine, select
 
@@ -137,6 +137,31 @@ def read_task(task_id: int):
         if not task:
             raise HTTPException(status_code=404, detail="Task not found")
         return TaskRead.model_validate(task)
+
+
+@app.patch("/tasks/{task_id}", response_model=TaskRead)
+def update_task(task_id: int, task_update: TaskUpdate):
+    """
+    Update task data.
+    """
+    with Session(engine) as session:
+        db_task = session.get(Task, task_id)
+        if not db_task:
+            raise HTTPException(status_code=404, detail="Task not found")
+
+        task_data = task_update.model_dump(exclude_unset=True)
+
+        db_task.sqlmodel_update(task_data)
+
+        session.add(db_task)
+        session.commit()
+        session.refresh(db_task)
+
+        statement = (
+            select(Task).where(Task.id == task_id).options(get_children_loader())
+        )
+        reloaded_task = session.exec(statement).first()
+        return TaskRead.model_validate(reloaded_task)
 
 
 @app.patch("/tasks/{task_id}/done", response_model=TaskRead)
