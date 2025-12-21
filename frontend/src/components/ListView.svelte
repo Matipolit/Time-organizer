@@ -99,17 +99,17 @@
 
 <div>
     {#if isLoading}
-        <p>Loading tasks...</p>
+        <p>Ładowanie zadań...</p>
     {:else if isError}
-        <p class="text-destructive">
-            Error loading tasks. Please try again later.
-        </p>
+        <p class="text-destructive">Błąd podczas ładowania zadań.</p>
     {:else if tasks && tasks.length === 0}
         <p>No tasks found. Enjoy your free time!</p>
     {:else if tasks}
         <!-- Undone Tasks -->
         <div class="mb-8">
-            <h2 class="text-xl font-bold mb-4">To Do ({undoneTasks.length})</h2>
+            <h2 class="text-xl font-bold mb-4">
+                Do zrobienia ({undoneTasks.length})
+            </h2>
             {#if undoneTasks.length > 0}
                 <ul class="space-y-2">
                     {#each flatUndoneTasks() as { task, depth } (task.id)}
@@ -134,14 +134,14 @@
                     {/each}
                 </ul>
             {:else}
-                <p class="text-muted-foreground">No pending tasks!</p>
+                <p class="text-muted-foreground">Brak zadań do zrobienia!</p>
             {/if}
         </div>
 
         <!-- Done Tasks -->
         <div>
             <h2 class="text-xl font-bold mb-4">
-                Completed ({doneTasks.length})
+                Zrobione ({doneTasks.length})
             </h2>
             {#if doneTasks.length > 0}
                 <ul class="space-y-2">
@@ -167,7 +167,7 @@
                     {/each}
                 </ul>
             {:else}
-                <p class="text-muted-foreground">No completed tasks yet.</p>
+                <p class="text-muted-foreground">Brak zrobionych zadań.</p>
             {/if}
         </div>
     {/if}

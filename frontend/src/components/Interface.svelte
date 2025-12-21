@@ -19,7 +19,7 @@
                     viewMode = "list";
                 }}
                 variant="outline"
-                selected={viewMode == "list"}><ListIcon />List view</Button
+                selected={viewMode == "list"}><ListIcon />Lista</Button
             >
             <Button
                 onclick={() => {
@@ -27,7 +27,7 @@
                 }}
                 variant="outline"
                 selected={viewMode == "calendar"}
-                ><CalendarIcon />Calendar view</Button
+                ><CalendarIcon />Kalendarz</Button
             >
         </div>
         <Button
@@ -36,7 +36,7 @@
             }}
             variant="primary"
         >
-            <Plus />Add Task
+            <Plus />Dodaj zadanie
         </Button>
     </div>
     {#if viewMode == "list"}

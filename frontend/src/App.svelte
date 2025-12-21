@@ -33,7 +33,7 @@
         {:else}
             <span></span>
         {/if}
-        <h1 class="text-xl font-bold">Flexible Task Organizer</h1>
+        <h1 class="text-xl font-bold">Organizator Zadań</h1>
         {#if page !== "settings"}
             <Button variant="ghost" onclick={() => (page = "settings")}>
                 <SettingsIcon />

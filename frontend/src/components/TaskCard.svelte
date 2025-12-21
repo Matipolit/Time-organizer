@@ -129,9 +129,9 @@
         {task.title}
         {#if hasChildren}
             <span class="text-sm text-muted-foreground font-normal ml-2">
-                ({task.children?.length} subtask{task.children?.length === 1
-                    ? ""
-                    : "s"})
+                ({task.children?.length} podzadani{task.children?.length === 1
+                    ? "e"
+                    : "a"})
             </span>
         {/if}
     </h3>
@@ -140,11 +140,19 @@
             {task.description}
         </p>
     {/if}
+    {#if task.scheduled_date}
+        <span
+            class="text-sm text-muted-foreground mt-2 flex gap-1 items-center"
+        >
+            <CalendarClockIcon class="text-muted-foreground" /> Do zrobienia:
+            {new Date(task.scheduled_date).toLocaleDateString()}
+        </span>
+    {/if}
     {#if task.deadline}
         <span
             class="text-sm text-muted-foreground mt-2 flex gap-1 items-center"
         >
-            <CalendarClockIcon class="text-muted-foreground" /> Due:
+            <CalendarClockIcon class="text-muted-foreground" /> Deadline:
             {new Date(task.deadline).toLocaleDateString()}
         </span>
     {/if}

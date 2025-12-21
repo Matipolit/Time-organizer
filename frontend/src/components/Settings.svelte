@@ -10,10 +10,8 @@
 
 <div class="max-w-md mx-auto space-y-8 p-4">
     <section class="space-y-4">
-        <h2 class="text-2xl font-bold">Appearance</h2>
-        <p class="text-muted-foreground">
-            Select a theme that fits your brain mode.
-        </p>
+        <h2 class="text-2xl font-bold">Wygląd</h2>
+        <p class="text-muted-foreground">Wybierz który motyw ci odpowiada.</p>
 
         <div class="grid grid-cols-2 gap-4">
             {#each THEMES as t}
@@ -23,19 +21,19 @@
             {/each}
         </div>
         <div>
-            <p>Preview:</p>
+            <p>Podgląd:</p>
             <div
                 class="flex flex-col space-x-2 border p-4 gap-1 rounded-xl bg-card text-card-foreground"
             >
                 <div>
                     <Check class="w-6 h-6 text-primary" />
-                    <p class="text-xl">Card title</p>
+                    <p class="text-xl">Tytuł</p>
                 </div>
-                <p class="text-muted-foreground">Card subtitle</p>
+                <p class="text-muted-foreground">Podtytuł</p>
                 <div class="flex gap-2">
-                    <Button variant="primary">Check</Button>
-                    <Button variant="outline">Refresh</Button>
-                    <Button variant="destructive"><Trash />Delete</Button>
+                    <Button variant="primary">Zaznacz</Button>
+                    <Button variant="outline">Odśwież</Button>
+                    <Button variant="destructive"><Trash />Usuń</Button>
                 </div>
             </div>
         </div>

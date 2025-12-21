@@ -89,15 +89,15 @@
         >
             <h2 class="text-2xl font-bold">
                 {isEditMode
-                    ? "Edit Task"
+                    ? "Edytuj zadanie"
                     : parentId
-                      ? "Add Subtask"
-                      : "Add New Task"}
+                      ? "Dodaj podzadanie"
+                      : "Dodaj nowe zadanie"}
             </h2>
             <button
                 onclick={onClose}
                 class="p-2 hover:bg-muted rounded-lg transition-colors"
-                aria-label="Close"
+                aria-label="Zamknij"
             >
                 <X />
             </button>
@@ -113,7 +113,7 @@
             <!-- Title -->
             <div>
                 <label for="title" class="block font-semibold mb-2">
-                    Title <span class="text-destructive">*</span>
+                    Tytuł <span class="text-destructive">*</span>
                 </label>
                 <input
                     id="title"
@@ -121,28 +121,28 @@
                     bind:value={title}
                     required
                     class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="What needs to be done?"
+                    placeholder="Co musi zostać zrobione?"
                 />
             </div>
 
             <!-- Description -->
             <div>
                 <label for="description" class="block font-semibold mb-2">
-                    Description
+                    Opis
                 </label>
                 <textarea
                     id="description"
                     bind:value={description}
                     rows="3"
                     class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                    placeholder="Add more details..."
+                    placeholder="Dodaj szczegóły ..."
                 ></textarea>
             </div>
 
             <!-- Task Type -->
             <div>
                 <label for="taskType" class="block font-semibold mb-2">
-                    Task Type <span class="text-destructive">*</span>
+                    Typ zadania <span class="text-destructive">*</span>
                 </label>
                 <select
                     id="taskType"
@@ -150,7 +150,8 @@
                     class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                     <option value={TaskType.DEADLINE}>Deadline</option>
-                    <option value={TaskType.CHORE}>Recurring Chore</option>
+                    <option value={TaskType.CHORE}>Powtarzalny obowiązek</option
+                    >
                     <option value={TaskType.STREAK}>Streak</option>
                 </select>
             </div>
@@ -158,7 +159,7 @@
             <!-- Scheduled Date (Do Date) -->
             <div>
                 <label for="scheduledDate" class="block font-semibold mb-2">
-                    Scheduled Date
+                    Miękki deadline
                 </label>
                 <input
                     id="scheduledDate"
@@ -171,20 +172,19 @@
             <!-- Effort Level -->
             <div>
                 <label for="effort" class="block font-semibold mb-2">
-                    Effort Level
+                    Poziom wysiłku
                 </label>
                 <select
                     id="effort"
                     bind:value={effort}
                     class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                    <option value={EffortLevel.S}
-                        >S - Quick ({"<"} 15 min)</option
+                    <option value={EffortLevel.S}>S - Mały({"<"} 15 min)</option
                     >
-                    <option value={EffortLevel.M}>M - Medium (~1 hour)</option>
-                    <option value={EffortLevel.L}>L - Long (~2-3 hours)</option>
+                    <option value={EffortLevel.M}>M - Średni (~1 godz.)</option>
+                    <option value={EffortLevel.L}>L - Duży (~2-3 godz.)</option>
                     <option value={EffortLevel.XL}
-                        >XL - Too Big (split it!)</option
+                        >XL - Zbyt duży (do podziału)</option
                     >
                 </select>
             </div>
@@ -193,7 +193,7 @@
             {#if taskType === TaskType.DEADLINE}
                 <div>
                     <label for="deadline" class="block font-semibold mb-2">
-                        Deadline Date
+                        Deadline
                     </label>
                     <input
                         id="deadline"
