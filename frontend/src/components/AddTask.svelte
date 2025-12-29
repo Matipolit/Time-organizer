@@ -156,20 +156,6 @@
                 </select>
             </div>
 
-            <!-- Scheduled Date (Do Date) -->
-            <div>
-                <label for="scheduledDate" class="block font-semibold mb-2">
-                    Miękki deadline
-                </label>
-                <input
-                    id="scheduledDate"
-                    type="date"
-                    bind:value={scheduledDate}
-                    class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-            </div>
-
-            <!-- Effort Level -->
             <div>
                 <label for="effort" class="block font-semibold mb-2">
                     Poziom wysiłku
@@ -188,8 +174,18 @@
                     >
                 </select>
             </div>
+            <div>
+                <label for="scheduledDate" class="block font-semibold mb-2">
+                    Miękki deadline
+                </label>
+                <input
+                    id="scheduledDate"
+                    type="date"
+                    bind:value={scheduledDate}
+                    class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+            </div>
 
-            <!-- Deadline-specific fields -->
             {#if taskType === TaskType.DEADLINE}
                 <div>
                     <label for="deadline" class="block font-semibold mb-2">
@@ -234,9 +230,9 @@
                     class="flex-1"
                 >
                     {#if mutations.create.isPending || mutations.update.isPending}
-                        Saving...
+                        Zapisywanie...
                     {:else}
-                        {isEditMode ? "Save Changes" : "Add Task"}
+                        {isEditMode ? "Zapisz zmiany" : "Dodaj zadanie"}
                     {/if}
                 </Button>
                 <Button
@@ -245,7 +241,7 @@
                     onclick={onClose}
                     class="flex-1"
                 >
-                    Cancel
+                    Anuluj
                 </Button>
             </div>
 

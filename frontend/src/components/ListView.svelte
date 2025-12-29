@@ -7,8 +7,10 @@
     import { TaskStatus, type Task } from "../lib/api";
     import TaskCard from "./TaskCard.svelte";
     import AddTask from "./AddTask.svelte";
+    import Button from "./Button.svelte";
+    import Dropdown from "./Dropdown.svelte";
+    import { Zap } from "lucide-svelte";
 
-    // Create crossfade transitions for smooth animations between lists
     const [send, receive] = crossfade({
         duration: 400,
         easing: quintOut,
@@ -16,20 +18,98 @@
 
     const tasksQuery = useTasks();
 
-    // Use $derived for Svelte 5 reactivity
     const tasks = $derived(tasksQuery.data);
     const isLoading = $derived(tasksQuery.isLoading);
     const isError = $derived(tasksQuery.isError);
 
-    // Reactively split tasks into done and undone
+    let items_show_selected = $state("all");
+
+    const items = [
+        { label: "Dziś", value: "today" },
+        { label: "Następnych 7 dni", value: "week" },
+        { label: "Następnych 30 dni", value: "month" },
+        { label: "Wszystkie", value: "all" },
+    ];
+
+    const tasksFromToday = $derived(() => {
+        const now = new Date();
+        return (
+            tasks?.filter((task) => {
+                if (task.scheduled_date) {
+                    const scheduledDate = new Date(task.scheduled_date);
+                    return scheduledDate.toDateString() === now.toDateString();
+                }
+                return false;
+            }) ?? []
+        );
+    });
+
+    const tasksFromNext7Days = $derived(() => {
+        const now = new Date();
+        const sevenDaysLater = new Date();
+        sevenDaysLater.setDate(now.getDate() + 7);
+
+        return (
+            tasks?.filter((task) => {
+                if (task.scheduled_date) {
+                    const scheduledDate = new Date(task.scheduled_date);
+                    return (
+                        scheduledDate >= now && scheduledDate <= sevenDaysLater
+                    );
+                }
+                return false;
+            }) ?? []
+        );
+    });
+
+    const tasksFromNext30Days = $derived(() => {
+        const now = new Date();
+        const thirtyDaysLater = new Date();
+        thirtyDaysLater.setDate(now.getDate() + 30);
+
+        return (
+            tasks?.filter((task) => {
+                if (task.scheduled_date) {
+                    const scheduledDate = new Date(task.scheduled_date);
+                    return (
+                        scheduledDate >= now && scheduledDate <= thirtyDaysLater
+                    );
+                }
+                return false;
+            }) ?? []
+        );
+    });
+
     const doneTasks = $derived(
-        tasks?.filter((task) => task.status === TaskStatus.DONE) ?? [],
-    );
-    const undoneTasks = $derived(
-        tasks?.filter((task) => task.status === TaskStatus.TODO) ?? [],
+        items_show_selected === "today"
+            ? tasksFromToday().filter((task) => task.status === TaskStatus.DONE)
+            : items_show_selected === "week"
+              ? tasksFromNext7Days().filter(
+                    (task) => task.status === TaskStatus.DONE,
+                )
+              : items_show_selected === "month"
+                ? tasksFromNext30Days().filter(
+                      (task) => task.status === TaskStatus.DONE,
+                  )
+                : (tasks?.filter((task) => task.status === TaskStatus.DONE) ??
+                  []),
     );
 
-    // Edit task state
+    const undoneTasks = $derived(
+        items_show_selected === "today"
+            ? tasksFromToday().filter((task) => task.status === TaskStatus.TODO)
+            : items_show_selected === "week"
+              ? tasksFromNext7Days().filter(
+                    (task) => task.status === TaskStatus.TODO,
+                )
+              : items_show_selected === "month"
+                ? tasksFromNext30Days().filter(
+                      (task) => task.status === TaskStatus.TODO,
+                  )
+                : (tasks?.filter((task) => task.status === TaskStatus.TODO) ??
+                  []),
+    );
+
     let editingTask = $state<Task | undefined>(undefined);
     let addingChildToTaskId = $state<number | undefined>(undefined);
 
@@ -107,9 +187,22 @@
     {:else if tasks}
         <!-- Undone Tasks -->
         <div class="mb-8">
-            <h2 class="text-xl font-bold mb-4">
-                Do zrobienia ({undoneTasks.length})
-            </h2>
+            <div
+                class="flex justify-start items-center content-start gap-4 mb-4"
+            >
+                <h2 class="text-xl font-bold">
+                    Do zrobienia ({undoneTasks.length})
+                </h2>
+                <p>Pokaż zadania:</p>
+                <Dropdown
+                    class="flex"
+                    value="all"
+                    size="sm"
+                    placeholder="Wybierz okres czasowy"
+                    onchange={(new_value) => (items_show_selected = new_value)}
+                    {items}
+                />
+            </div>
             {#if undoneTasks.length > 0}
                 <ul class="space-y-2">
                     {#each flatUndoneTasks() as { task, depth } (task.id)}

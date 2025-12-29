@@ -36,7 +36,7 @@
             }}
             variant="primary"
         >
-            <Plus />Dodaj zadanie
+            <Plus />
         </Button>
     </div>
     {#if viewMode == "list"}
