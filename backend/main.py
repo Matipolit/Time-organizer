@@ -1,11 +1,19 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
+from pydantic import BaseModel
 from models import Task, TaskRead, TaskStatus, TaskType, TaskUpdate
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, SQLModel, create_engine, select
+from auth import (
+    create_access_token,
+    get_current_user,
+    verify_password,
+    get_credentials_from_env,
+)
 
 
 def get_children_loader():
@@ -49,13 +57,45 @@ def get_session():
         yield session
 
 
+# Request/Response models for auth
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+
+
+@app.post("/auth/login", response_model=TokenResponse)
+def login(request: LoginRequest):
+    """Login endpoint - returns JWT token"""
+    env_username, env_password = get_credentials_from_env()
+
+    if request.username != env_username or request.password != env_password:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+        )
+
+    access_token = create_access_token(data={"sub": request.username})
+    return TokenResponse(access_token=access_token, token_type="bearer")
+
+
+@app.get("/auth/verify")
+def verify_auth(current_user: dict = Depends(get_current_user)):
+    """Verify that the provided token is valid"""
+    return {"status": "authenticated", "user": current_user.get("sub")}
+
+
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
 
 
 @app.post("/tasks/", response_model=TaskRead)
-def create_task(task: Task):
+def create_task(task: Task, current_user: dict = Depends(get_current_user)):
     """
     Create a new task.
     """
@@ -92,6 +132,7 @@ def read_tasks(
     status: Optional[TaskStatus] = None,
     task_type: Optional[TaskType] = None,
     only_today: bool = False,
+    current_user: dict = Depends(get_current_user),
 ):
     """
     Fetch tasks (only root tasks with children populated).
@@ -125,7 +166,7 @@ def read_tasks(
 
 
 @app.get("/tasks/{task_id}", response_model=TaskRead)
-def read_task(task_id: int):
+def read_task(task_id: int, current_user: dict = Depends(get_current_user)):
     """
     Fetch a single task by ID with children populated.
     """
@@ -140,7 +181,7 @@ def read_task(task_id: int):
 
 
 @app.patch("/tasks/{task_id}", response_model=TaskRead)
-def update_task(task_id: int, task_update: TaskUpdate):
+def update_task(task_id: int, task_update: TaskUpdate, current_user: dict = Depends(get_current_user)):
     """
     Update task data.
     """
@@ -165,7 +206,7 @@ def update_task(task_id: int, task_update: TaskUpdate):
 
 
 @app.patch("/tasks/{task_id}/done", response_model=TaskRead)
-def mark_task_done(task_id: int):
+def mark_task_done(task_id: int, current_user: dict = Depends(get_current_user)):
     """
     Mark task as done, handle the following logic depending on task type
     """
@@ -234,7 +275,7 @@ def mark_task_done(task_id: int):
 
 
 @app.patch("/tasks/{task_id}/undone", response_model=TaskRead)
-def mark_task_undone(task_id: int):
+def mark_task_undone(task_id: int, current_user: dict = Depends(get_current_user)):
     """
     Mark task as undone.
     """
@@ -262,7 +303,7 @@ def mark_task_undone(task_id: int):
 
 
 @app.delete("/tasks/{task_id}")
-def delete_task(task_id: int):
+def delete_task(task_id: int, current_user: dict = Depends(get_current_user)):
     with Session(engine) as session:
         task = session.get(Task, task_id)
         if not task:

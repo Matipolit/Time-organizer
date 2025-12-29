@@ -51,6 +51,25 @@ export interface Task {
 
 const API_BASE = "/timely/api"; // proxied by vite
 
+function getToken(): string | null {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("auth_token");
+  }
+  return null;
+}
+
+function setToken(token: string): void {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("auth_token", token);
+  }
+}
+
+function removeToken(): void {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("auth_token");
+  }
+}
+
 async function request<T>(
   endpoint: string,
   method: "GET" | "POST" | "PATCH" | "DELETE" = "GET",
@@ -62,6 +81,14 @@ async function request<T>(
       "Content-Type": "application/json",
     },
   };
+
+  const token = getToken();
+  if (token) {
+    options.headers = {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+    };
+  }
 
   if (body) {
     options.body = JSON.stringify(body);
@@ -85,6 +112,25 @@ async function request<T>(
 // API methods
 
 export const api = {
+  // Auth
+  login: async (username: string, password: string) => {
+    const response = await request<{ access_token: string; token_type: string }>(
+      "/auth/login",
+      "POST",
+      { username, password }
+    );
+    setToken(response.access_token);
+    return response;
+  },
+
+  logout: async () => {
+    removeToken();
+  },
+
+  verifyToken: async () => {
+    return request<{ status: string; user: string }>("/auth/verify", "GET");
+  },
+
   // Fetch tasks with optional filters
   getTasks: async (filters: TaskFilters = {}) => {
     const queryString = filtersToQueryParams(filters);
