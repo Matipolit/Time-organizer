@@ -25,8 +25,6 @@ def get_children_loader():
     )
 
 
-app = FastAPI()
-
 sqlite_file_name = "planner.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 connect_args = {"check_same_thread": False}
@@ -37,7 +35,7 @@ def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
 
-app = FastAPI(title="Flexible Planner API")
+app = FastAPI(title="Flexible Planner API", root_path="/timely/api")
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,6 +43,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://192.168.0.32",
+        "matipolit.ovh"
     ],  # Vite default port
     allow_credentials=True,
     allow_methods=["*"],
