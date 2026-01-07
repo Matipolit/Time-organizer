@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 
 // Define the available themes for TypeScript safety
-export type Theme = "light" | "dark" | "forest" | "cyberpunk";
+export type Theme = "light" | "dark" | "forest" | "cyberpunk" | "gruvbox";
 
 // Export array of all themes as single source of truth
 export const THEMES: readonly Theme[] = [
@@ -9,6 +9,7 @@ export const THEMES: readonly Theme[] = [
   "dark",
   "forest",
   "cyberpunk",
+  "gruvbox"
 ] as const;
 
 function createThemeStore() {

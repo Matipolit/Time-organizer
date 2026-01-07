@@ -18,7 +18,6 @@
 
     type Page = "main" | "settings";
 
-    // Export array of all themes as single source of truth
     export const PAGES: readonly Page[] = ["main", "settings"] as const;
 
     let page = $state("main");

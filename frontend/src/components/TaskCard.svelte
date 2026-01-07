@@ -97,11 +97,13 @@
 
     <!-- Action Buttons (visible on hover) -->
     <div
-        class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+        class="absolute top-2 right-2 flex gap-1
+           opacity-100 lg:opacity-0 lg:group-hover:opacity-100
+           transition-opacity"
     >
         <button
             onclick={handleAddChild}
-            class="p-2 bg-background hover:bg-primary hover:text-primary-foreground rounded-lg transition-colors"
+            class="p-3 lg:p-2 bg-background hover:bg-primary hover:text-primary-foreground rounded-lg transition-colors"
             aria-label="Add subtask"
             title="Add subtask"
         >
@@ -109,7 +111,7 @@
         </button>
         <button
             onclick={handleEdit}
-            class="p-2 bg-background hover:bg-muted rounded-lg transition-colors"
+            class="p-3 lg:p-2 bg-background hover:bg-muted rounded-lg transition-colors"
             aria-label="Edit task"
             title="Edit task"
         >
@@ -117,7 +119,7 @@
         </button>
         <button
             onclick={handleDelete}
-            class="p-2 bg-background hover:bg-destructive hover:text-destructive-foreground rounded-lg transition-colors"
+            class="p-3 lg:p-2 bg-background hover:bg-destructive hover:text-destructive-foreground rounded-lg transition-colors"
             aria-label="Delete task"
             title="Delete task"
         >

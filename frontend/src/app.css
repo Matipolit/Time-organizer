@@ -62,26 +62,34 @@
     }
 
     .dark {
-        /* Dark Mode */
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 240 10% 6%;
-        --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 217.2 91.2% 59.8%;
-        --primary-foreground: 222.2 47.4% 11.2%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 240 3.7% 15.9%;
-        --muted-foreground: 240 5% 64.9%;
-        --accent: 240 3.7% 15.9%;
+        --background: 300 10% 5%;
+        --foreground: 300 5% 98%;
+
+        --card: 300 8% 8%;
+        --card-foreground: 300 5% 98%;
+
+        --popover: 300 10% 5%;
+        --popover-foreground: 300 5% 98%;
+
+        --primary: 303 45% 65%;
+        --primary-foreground: 300 5% 7%;
+
+        --secondary: 303 20% 18%;
+        --secondary-foreground: 0 0% 98%;
+
+        --muted: 303 15% 15%;
+        --muted-foreground: 303 10% 65%;
+
+        --accent: 303 15% 15%;
         --accent-foreground: 0 0% 98%;
+
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 240 3.7% 15.9%;
-        --input: 240 3.7% 15.9%;
-        --ring: 240 4.9% 83.9%;
+        --destructive-foreground: 0 0% 98%;
+
+        --border: 303 20% 18%;
+        --input: 303 20% 18%;
+        
+        --ring: 303 45% 65%;
     }
 
     [data-theme="forest"] {
@@ -130,6 +138,47 @@
         --input: 280 50% 20%;
         --ring: 180 100% 50%;
         --radius: 0px;
+    }
+
+    [data-theme="gruvbox"] {
+        /* Gruvbox Dark Theme */
+        --background: 40 0% 16%;
+        --foreground: 43 58% 81%;
+
+        /* Card: #32302f (Slightly lighter dark) */
+        --card: 40 5% 19%;
+        --card-foreground: 43 58% 81%;
+
+        /* Popover: #32302f */
+        --popover: 40 5% 19%;
+        --popover-foreground: 43 58% 81%;
+        
+        /* Primary: #fe8019 (Gruvbox Orange) */
+        --primary: 24 99% 55%;
+        --primary-foreground: 40 6% 16%;
+
+        /* Secondary: #504945 (Darker grey-brown) */
+        --secondary: 40 5% 30%;
+        --secondary-foreground: 46 56% 81%;
+
+        /* Muted: #3c3836 */
+        --muted: 40 5% 23%;
+        --muted-foreground: 40 15% 65%; /* #a89984 */
+
+        /* Accent: #504945 (Used for hovers) */
+        --accent: 40 5% 30%;
+        --accent-foreground: 46 56% 81%;
+
+        /* Destructive: #fb4934 (Gruvbox Red) */
+        --destructive: 11 93% 59%;
+        --destructive-foreground: 40 6% 16%;
+
+        /* Border: #504945 */
+        --border: 40 5% 30%;
+        --input: 40 5% 30%;
+        
+        /* Ring: Matches Primary */
+        --ring: 24 99% 55%;
     }
 
     /* Standard Resets */

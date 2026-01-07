@@ -11,6 +11,9 @@
     import Dropdown from "./Dropdown.svelte";
     import { Zap } from "lucide-svelte";
 
+    import { getCookie, setCookie } from "../lib/cookies";
+    import { untrack } from "svelte";
+
     const [send, receive] = crossfade({
         duration: 400,
         easing: quintOut,
@@ -22,14 +25,35 @@
     const isLoading = $derived(tasksQuery.isLoading);
     const isError = $derived(tasksQuery.isError);
 
-    let items_show_selected = $state("all");
-
     const items = [
         { label: "Dziś", value: "today" },
         { label: "Następnych 7 dni", value: "week" },
         { label: "Następnych 30 dni", value: "month" },
         { label: "Wszystkie", value: "all" },
     ];
+
+    let items_show_selected = $state(
+        getCookie("items_show_selected") ?? "all",
+    );
+
+    let isMounted = false;
+
+    $effect(() => {
+        // We access state to register the dependency
+        const currentSelection = items_show_selected;
+
+        if (!isMounted) {
+            isMounted = true;
+            return;
+        }
+
+        // This code only runs on subsequent updates
+        untrack(() => {
+            console.log("Saving preference to cookie.");
+            setCookie("items_show_selected", currentSelection, 30);
+        });
+    });
+
 
     const tasksFromToday = $derived(() => {
         const now = new Date();
@@ -196,7 +220,7 @@
                 <p>Pokaż zadania:</p>
                 <Dropdown
                     class="flex"
-                    value="all"
+                    bind:value={items_show_selected}
                     size="sm"
                     placeholder="Wybierz okres czasowy"
                     onchange={(new_value) => (items_show_selected = new_value)}
