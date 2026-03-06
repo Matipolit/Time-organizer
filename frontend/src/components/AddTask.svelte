@@ -174,19 +174,20 @@
                     >
                 </select>
             </div>
-            <div>
-                <label for="scheduledDate" class="block font-semibold mb-2">
-                    Miękki deadline
-                </label>
-                <input
-                    id="scheduledDate"
-                    type="date"
-                    bind:value={scheduledDate}
-                    class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-            </div>
 
             {#if taskType === TaskType.DEADLINE}
+                <div>
+                    <label for="scheduledDate" class="block font-semibold mb-2">
+                        Miękki deadline
+                    </label>
+                    <input
+                        id="scheduledDate"
+                        type="date"
+                        bind:value={scheduledDate}
+                        class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                </div>
+
                 <div>
                     <label for="deadline" class="block font-semibold mb-2">
                         Deadline
@@ -207,7 +208,7 @@
                         for="recurrenceIntervalDays"
                         class="block font-semibold mb-2"
                     >
-                        Recurrence Interval (days)
+                        Co ile dni?
                     </label>
                     <input
                         id="recurrenceIntervalDays"

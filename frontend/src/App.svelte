@@ -95,7 +95,7 @@
                 </Button>
             </div>
         </header>
-        <div class="p-2">
+        <div class="pl-2 pr-2">
             <QueryClientProvider client={queryClient}>
                 {#if page === "main"}
                     <Interface />

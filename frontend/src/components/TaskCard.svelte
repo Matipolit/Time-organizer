@@ -6,9 +6,14 @@
         Plus,
         ChevronRight,
         ChevronDown,
+        CalendarCheckIcon,
+        BatteryLow,
+        BatteryMedium,
+        Battery,
+        BatteryWarning,
     } from "lucide-svelte";
     import type { Task } from "../lib/api";
-    import { TaskStatus } from "../lib/api";
+    import { TaskStatus, EffortLevel } from "../lib/api";
     import { useTaskMutation } from "../lib/queries/tasks";
 
     interface Props {
@@ -46,7 +51,7 @@
 
     function handleDelete(e: MouseEvent) {
         e.stopPropagation();
-        if (confirm(`Are you sure you want to delete "${task.title}"?`)) {
+        if (confirm(`Czy na pewno chcesz usunąć "${task.title}"?`)) {
             mutations.delete.mutate(task.id!);
         }
     }
@@ -61,6 +66,34 @@
         onAddChild(task.id!);
     }
 
+    const effortConfig: Record<
+        EffortLevel,
+        { icon: any; color: string; label: string }
+    > = {
+        [EffortLevel.S]: {
+            icon: BatteryLow,
+            color: "text-effort-s",
+            label: "Quick win (< 15 min)",
+        },
+        [EffortLevel.M]: {
+            icon: BatteryMedium,
+            color: "text-effort-m",
+            label: "Standard (~1 hour)",
+        },
+        [EffortLevel.L]: {
+            icon: Battery,
+            color: "text-effort-l",
+            label: "Deep work (2–3 hours)",
+        },
+        [EffortLevel.XL]: {
+            icon: BatteryWarning,
+            color: "text-effort-xl",
+            label: "Too big — needs breakdown!",
+        },
+    };
+
+    const effortInfo = $derived(task.effort ? effortConfig[task.effort] : null);
+
     function handleToggleExpand(e: MouseEvent) {
         e.stopPropagation();
         if (onToggleExpand) {
@@ -70,7 +103,7 @@
 </script>
 
 <div
-    class="p-4 border rounded-lg hover:shadow-md transition-shadow bg-card cursor-pointer relative group"
+    class="p-4 border-2 border-muted-foreground/25 rounded-lg hover:shadow-md transition-shadow bg-card cursor-pointer relative group"
     class:opacity-60={isDone}
     in:receive={{ key: task.id }}
     out:send={{ key: task.id }}
@@ -127,13 +160,11 @@
         </button>
     </div>
 
-    <h3 class="text-lg font-semibold pr-32" class:pl-8={hasChildren}>
+    <h3 class="text-md font-semibold pr-32" class:pl-8={hasChildren}>
         {task.title}
         {#if hasChildren}
-            <span class="text-sm text-muted-foreground font-normal ml-2">
-                ({task.children?.length} podzadani{task.children?.length === 1
-                    ? "e"
-                    : "a"})
+            <span class="rounded-full bg-accent/50 pl-2 pr-2">
+                {task.children?.length}
             </span>
         {/if}
     </h3>
@@ -146,7 +177,7 @@
         <span
             class="text-sm text-muted-foreground mt-2 flex gap-1 items-center"
         >
-            <CalendarClockIcon class="text-muted-foreground" /> Do zrobienia:
+            <CalendarCheckIcon class="text-muted-foreground" />
             {new Date(task.scheduled_date).toLocaleDateString()}
         </span>
     {/if}
@@ -154,8 +185,17 @@
         <span
             class="text-sm text-muted-foreground mt-2 flex gap-1 items-center"
         >
-            <CalendarClockIcon class="text-muted-foreground" /> Deadline:
+            <CalendarClockIcon class="text-muted-foreground" />
             {new Date(task.deadline).toLocaleDateString()}
+        </span>
+    {/if}
+    {#if effortInfo}
+        <span
+            class="text-sm mt-2 flex gap-1 items-center {effortInfo.color}"
+            title={effortInfo.label}
+        >
+            <effortInfo.icon size={16} />
+            {task.effort}
         </span>
     {/if}
 </div>
