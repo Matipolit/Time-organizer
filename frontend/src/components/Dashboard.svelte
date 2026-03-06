@@ -236,8 +236,6 @@
         <p>Ładowanie zadań...</p>
     {:else if isError}
         <p class="text-destructive">Błąd podczas ładowania zadań.</p>
-    {:else if tasks && tasks.length === 0}
-        <p>Brak zadań</p>
     {/if}
 
     <!-- Deadline task list -->
