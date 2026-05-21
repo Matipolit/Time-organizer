@@ -67,6 +67,7 @@
             });
         }
     }
+
 </script>
 
 <div
@@ -133,8 +134,8 @@
                 <textarea
                     id="description"
                     bind:value={description}
-                    rows="3"
-                    class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                    rows="5"
+                    class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-vertical"
                     placeholder="Dodaj szczegóły ..."
                 ></textarea>
             </div>

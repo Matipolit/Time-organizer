@@ -72,6 +72,18 @@ class Task(SQLModel, table=True):
     )
 
 
+class Idea(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str = Field(index=True)
+    description: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.now)
+
+
+class IdeaUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+
 class TaskRead(SQLModel):
     id: int
     title: str

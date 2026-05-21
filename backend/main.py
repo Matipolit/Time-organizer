@@ -1,19 +1,19 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException, Depends, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer
-from pydantic import BaseModel
-from models import Task, TaskRead, TaskStatus, TaskType, TaskUpdate
-from sqlalchemy.orm import selectinload
-from sqlmodel import Session, SQLModel, create_engine, select
 from auth import (
     create_access_token,
+    get_credentials_from_env,
     get_current_user,
     verify_password,
-    get_credentials_from_env,
 )
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer
+from models import Idea, IdeaUpdate, Task, TaskRead, TaskStatus, TaskType, TaskUpdate
+from pydantic import BaseModel
+from sqlalchemy.orm import selectinload
+from sqlmodel import Session, SQLModel, create_engine, select
 
 
 def get_children_loader():
@@ -43,7 +43,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://192.168.0.32",
-        "matipolit.ovh"
+        "matipolit.ovh",
     ],  # Vite default port
     allow_credentials=True,
     allow_methods=["*"],
@@ -91,6 +91,104 @@ def verify_auth(current_user: dict = Depends(get_current_user)):
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+
+
+@app.post("/ideas/", response_model=Idea)
+def create_idea(idea: Idea, current_user: dict = Depends(get_current_user)):
+    """
+    Create a new idea.
+    """
+    with Session(engine) as session:
+        session.add(idea)
+        session.commit()
+        session.refresh(idea)
+        return idea
+
+
+@app.get("/ideas/", response_model=List[Idea])
+def read_ideas(
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Fetch ideas
+    """
+    with Session(engine) as session:
+        statement = select(Idea).order_by(Idea.created_at.desc())  # type: ignore
+        results = session.exec(statement).all()
+        return list(results)
+
+
+@app.patch("/ideas/{idea_id}", response_model=Idea)
+def update_idea(
+    idea_id: int,
+    idea_update: IdeaUpdate,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Update an idea.
+    """
+    with Session(engine) as session:
+        db_idea = session.get(Idea, idea_id)
+        if not db_idea:
+            raise HTTPException(status_code=404, detail="Idea not found")
+
+        idea_data = idea_update.model_dump(exclude_unset=True)
+        db_idea.sqlmodel_update(idea_data)
+        session.add(db_idea)
+        session.commit()
+        session.refresh(db_idea)
+        return db_idea
+
+
+@app.delete("/ideas/{idea_id}")
+def delete_idea(idea_id: int, current_user: dict = Depends(get_current_user)):
+    """
+    Delete an idea.
+    """
+    with Session(engine) as session:
+        db_idea = session.get(Idea, idea_id)
+        if not db_idea:
+            raise HTTPException(status_code=404, detail="Idea not found")
+        session.delete(db_idea)
+        session.commit()
+        return {"ok": True}
+
+
+@app.post("/ideas/{idea_id}/convert", response_model=TaskRead)
+def convert_idea_to_task(
+    idea_id: int,
+    task_type: TaskType = TaskType.DEADLINE,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Convert an idea into a task and delete the original idea.
+    """
+    with Session(engine) as session:
+        db_idea = session.get(Idea, idea_id)
+        if not db_idea:
+            raise HTTPException(status_code=404, detail="Idea not found")
+
+        new_task = Task(
+            title=db_idea.title,
+            description=db_idea.description,
+            task_type=task_type,
+            status=TaskStatus.TODO,
+            created_at=datetime.now(),
+        )
+
+        session.add(new_task)
+        session.delete(db_idea)
+        session.commit()
+        session.refresh(new_task)
+
+        # Reload with children to avoid detached instance error
+        statement = (
+            select(Task).where(Task.id == new_task.id).options(get_children_loader())
+        )
+        reloaded_task = session.exec(statement).first()
+        if not reloaded_task:
+            raise HTTPException(status_code=500, detail="Failed to reload created task")
+        return TaskRead.model_validate(reloaded_task)
 
 
 @app.post("/tasks/", response_model=TaskRead)
@@ -180,7 +278,11 @@ def read_task(task_id: int, current_user: dict = Depends(get_current_user)):
 
 
 @app.patch("/tasks/{task_id}", response_model=TaskRead)
-def update_task(task_id: int, task_update: TaskUpdate, current_user: dict = Depends(get_current_user)):
+def update_task(
+    task_id: int,
+    task_update: TaskUpdate,
+    current_user: dict = Depends(get_current_user),
+):
     """
     Update task data.
     """

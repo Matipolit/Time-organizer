@@ -4,13 +4,15 @@
         LayoutDashboardIcon,
         ListIcon,
         Plus,
+        Lightbulb,
     } from "lucide-svelte";
     import Button from "./Button.svelte";
     import Dashboard from "./Dashboard.svelte";
     import CalendarView from "./CalendarView.svelte";
+    import IdeasView from "./IdeasView.svelte";
     import AddTask from "./AddTask.svelte";
 
-    const VIEW_MODES = ["dashboard", "calendar"] as const;
+    const VIEW_MODES = ["dashboard", "calendar", "ideas"] as const;
 
     let viewMode: (typeof VIEW_MODES)[number] = $state("dashboard");
     let showAddTask = $state(false);
@@ -38,6 +40,13 @@
                     selected={viewMode == "calendar"}
                     ><CalendarIcon />Kalendarz</Button
                 >
+                <Button
+                    onclick={() => {
+                        viewMode = "ideas";
+                    }}
+                    variant="outline"
+                    selected={viewMode == "ideas"}><Lightbulb />Pomysły</Button
+                >
             </div>
 
             <Button
@@ -54,6 +63,8 @@
         <Dashboard />
     {:else if viewMode == "calendar"}
         <CalendarView />
+    {:else if viewMode == "ideas"}
+        <IdeasView />
     {/if}
 </div>
 

@@ -49,6 +49,18 @@ export interface Task {
   last_completed_at?: string;
 }
 
+export interface Idea {
+  id?: number;
+  title: string;
+  description?: string;
+  created_at?: string;
+}
+
+export interface IdeaUpdate {
+  title?: string;
+  description?: string;
+}
+
 const API_BASE = "/timely/api"; // proxied by vite
 
 function getToken(): string | null {
@@ -114,11 +126,10 @@ async function request<T>(
 export const api = {
   // Auth
   login: async (username: string, password: string) => {
-    const response = await request<{ access_token: string; token_type: string }>(
-      "/auth/login",
-      "POST",
-      { username, password }
-    );
+    const response = await request<{
+      access_token: string;
+      token_type: string;
+    }>("/auth/login", "POST", { username, password });
     setToken(response.access_token);
     return response;
   },
@@ -159,5 +170,32 @@ export const api = {
   // Delete
   deleteTask: async (taskId: number) => {
     return request<{ ok: boolean }>(`/tasks/${taskId}`, "DELETE");
+  },
+
+  // Ideas
+  getIdeas: async () => {
+    return request<Idea[]>("/ideas/", "GET");
+  },
+
+  createIdea: async (idea: Partial<Idea>) => {
+    return request<Idea>("/ideas/", "POST", idea);
+  },
+
+  updateIdea: async (ideaId: number, updates: IdeaUpdate) => {
+    return request<Idea>(`/ideas/${ideaId}`, "PATCH", updates);
+  },
+
+  deleteIdea: async (ideaId: number) => {
+    return request<{ ok: boolean }>(`/ideas/${ideaId}`, "DELETE");
+  },
+
+  convertIdeaToTask: async (
+    ideaId: number,
+    taskType: TaskType = TaskType.DEADLINE,
+  ) => {
+    return request<Task>(
+      `/ideas/${ideaId}/convert?task_type=${taskType}`,
+      "POST",
+    );
   },
 };
