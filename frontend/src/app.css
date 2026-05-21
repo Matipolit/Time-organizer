@@ -42,8 +42,10 @@
 
 /* 2. Define the Variable Values */
 @layer base {
-    :root {
-        /* Default: Light Mode */
+    /* DEFAULT PALETTE */
+    :root,
+    [data-palette="default"] {
+        /* Light Vars */
         --background: 0 0% 100%;
         --foreground: 240 10% 3.9%;
         --card: 0 0% 98%;
@@ -68,92 +70,145 @@
         --effort-m: 221 83% 53%;
         --effort-l: 25 95% 50%;
         --effort-xl: 0 84% 55%;
+
+        /* Dark Vars (System) */
+        @media (prefers-color-scheme: dark) {
+            &:not(.light) {
+                --background: 300 10% 5%;
+                --foreground: 300 5% 98%;
+                --card: 300 10% 10%;
+                --card-foreground: 300 5% 98%;
+                --primary: 303 45% 65%;
+                --primary-foreground: 300 5% 7%;
+                --secondary: 303 20% 18%;
+                --secondary-foreground: 0 0% 98%;
+                --muted: 303 16% 16%;
+                --muted-foreground: 303 10% 65%;
+                --border: 303 20% 18%;
+                --effort-s: 142 60% 50%;
+                --effort-m: 217 91% 65%;
+                --effort-l: 25 90% 55%;
+                --effort-xl: 0 72% 55%;
+            }
+        }
+        /* Dark Vars (Manual Override) */
+        &.dark {
+            --background: 300 10% 5%;
+            --foreground: 300 5% 98%;
+            --card: 300 10% 10%;
+            --card-foreground: 300 5% 98%;
+            --primary: 303 45% 65%;
+            --primary-foreground: 300 5% 7%;
+            --secondary: 303 20% 18%;
+            --secondary-foreground: 0 0% 98%;
+            --muted: 303 16% 16%;
+            --muted-foreground: 303 10% 65%;
+            --border: 303 20% 18%;
+            --effort-s: 142 60% 50%;
+            --effort-m: 217 91% 65%;
+            --effort-l: 25 90% 55%;
+            --effort-xl: 0 72% 55%;
+        }
     }
 
-    .dark {
-        --background: 300 10% 5%;
-        --foreground: 300 5% 98%;
-
-        --card: 300 10% 10%;
-        --card-foreground: 300 5% 98%;
-
-        --popover: 300 10% 5%;
-        --popover-foreground: 300 5% 98%;
-
-        --primary: 303 45% 65%;
-        --primary-foreground: 300 5% 7%;
-
-        --secondary: 303 20% 18%;
-        --secondary-foreground: 0 0% 98%;
-
-        --muted: 303 16% 16%;
-        --muted-foreground: 303 10% 65%;
-
-        --accent: 303 15% 15%;
-        --accent-foreground: 0 0% 98%;
-
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-
-        --border: 303 20% 18%;
-        --input: 303 20% 18%;
-
-        --ring: 303 45% 65%;
-        --effort-s: 142 60% 50%;
-        --effort-m: 217 91% 65%;
-        --effort-l: 25 90% 55%;
-        --effort-xl: 0 72% 55%;
-    }
-
-    [data-theme="forest"] {
-        /* Forest Theme */
+    /* FOREST PALETTE */
+    [data-palette="forest"] {
+        /* Light Vars */
         --background: 140 30% 96%;
         --foreground: 140 50% 10%;
         --card: 140 20% 98%;
         --card-foreground: 140 50% 10%;
-        --popover: 140 20% 98%;
-        --popover-foreground: 140 50% 10%;
         --primary: 142 76% 36%;
         --primary-foreground: 355 100% 97%;
         --secondary: 140 40% 80%;
         --secondary-foreground: 140 50% 10%;
         --muted: 140 20% 90%;
         --muted-foreground: 140 40% 40%;
-        --accent: 142 76% 36%;
-        --accent-foreground: 355 100% 97%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
         --border: 140 30% 80%;
-        --input: 140 30% 80%;
-        --ring: 142 76% 36%;
         --radius: 1rem;
-        --effort-s: 142 76% 36%;
-        --effort-m: 200 80% 40%;
-        --effort-l: 35 90% 45%;
-        --effort-xl: 0 84% 60%;
+
+        /* Dark Vars (System) */
+        @media (prefers-color-scheme: dark) {
+            &:not(.light) {
+                --background: 140 40% 4%;
+                --foreground: 140 20% 95%;
+                --card: 140 35% 8%;
+                --card-foreground: 140 20% 95%;
+                --primary: 142 70% 45%;
+                --secondary: 140 30% 15%;
+                --muted: 140 25% 12%;
+                --muted-foreground: 140 20% 65%;
+                --border: 140 30% 15%;
+            }
+        }
+        /* Dark Vars (Manual Override) */
+        &.dark {
+            --background: 140 40% 4%;
+            --foreground: 140 20% 95%;
+            --card: 140 35% 8%;
+            --card-foreground: 140 20% 95%;
+            --primary: 142 70% 45%;
+            --secondary: 140 30% 15%;
+            --muted: 140 25% 12%;
+            --muted-foreground: 140 20% 65%;
+            --border: 140 30% 15%;
+        }
     }
 
-    [data-theme="cyberpunk"] {
-        /* Cyberpunk Theme */
+    /* GRUVBOX PALETTE */
+    [data-palette="gruvbox"] {
+        /* Light Vars */
+        --background: 44 41% 90%;
+        --foreground: 40 10% 21%;
+        --card: 44 35% 86%;
+        --card-foreground: 40 10% 21%;
+        --primary: 24 99% 45%;
+        --secondary: 40 15% 75%;
+        --muted: 40 15% 80%;
+        --muted-foreground: 40 10% 40%;
+        --border: 40 15% 75%;
+
+        /* Dark Vars (System) */
+        @media (prefers-color-scheme: dark) {
+            &:not(.light) {
+                --background: 40 0% 16%;
+                --foreground: 43 58% 81%;
+                --card: 40 5% 19%;
+                --card-foreground: 43 58% 81%;
+                --primary: 24 99% 55%;
+                --secondary: 40 5% 30%;
+                --muted: 40 5% 23%;
+                --muted-foreground: 40 15% 65%;
+                --border: 40 5% 30%;
+            }
+        }
+        /* Dark Vars (Manual Override) */
+        &.dark {
+            --background: 40 0% 16%;
+            --foreground: 43 58% 81%;
+            --card: 40 5% 19%;
+            --card-foreground: 43 58% 81%;
+            --primary: 24 99% 55%;
+            --secondary: 40 5% 30%;
+            --muted: 40 5% 23%;
+            --muted-foreground: 40 15% 65%;
+            --border: 40 5% 30%;
+        }
+    }
+
+    /* CYBERPUNK PALETTE */
+    [data-palette="cyberpunk"] {
         --background: 280 60% 5%;
         --foreground: 280 10% 90%;
         --card: 280 50% 12%;
         --card-foreground: 180 100% 70%;
-        --popover: 280 50% 10%;
-        --popover-foreground: 300 100% 50%;
         --primary: 180 100% 50%;
         --primary-foreground: 280 60% 5%;
         --secondary: 300 100% 50%;
         --secondary-foreground: 180 100% 70%;
         --muted: 280 40% 15%;
         --muted-foreground: 280 20% 70%;
-        --accent: 300 100% 50%;
-        --accent-foreground: 280 60% 5%;
-        --destructive: 0 100% 50%;
-        --destructive-foreground: 280 60% 5%;
         --border: 180 100% 50%;
-        --input: 280 50% 20%;
-        --ring: 180 100% 50%;
         --radius: 0px;
         --effort-s: 120 100% 50%;
         --effort-m: 180 100% 50%;
@@ -161,52 +216,6 @@
         --effort-xl: 300 100% 50%;
     }
 
-    [data-theme="gruvbox"] {
-        /* Gruvbox Dark Theme */
-        --background: 40 0% 16%;
-        --foreground: 43 58% 81%;
-
-        /* Card: #32302f (Slightly lighter dark) */
-        --card: 40 5% 19%;
-        --card-foreground: 43 58% 81%;
-
-        /* Popover: #32302f */
-        --popover: 40 5% 19%;
-        --popover-foreground: 43 58% 81%;
-
-        /* Primary: #fe8019 (Gruvbox Orange) */
-        --primary: 24 99% 55%;
-        --primary-foreground: 40 6% 16%;
-
-        /* Secondary: #504945 (Darker grey-brown) */
-        --secondary: 40 5% 30%;
-        --secondary-foreground: 46 56% 81%;
-
-        /* Muted: #3c3836 */
-        --muted: 40 5% 23%;
-        --muted-foreground: 40 15% 65%; /* #a89984 */
-
-        /* Accent: #504945 (Used for hovers) */
-        --accent: 40 5% 30%;
-        --accent-foreground: 46 56% 81%;
-
-        /* Destructive: #fb4934 (Gruvbox Red) */
-        --destructive: 11 93% 59%;
-        --destructive-foreground: 40 6% 16%;
-
-        /* Border: #504945 */
-        --border: 40 5% 30%;
-        --input: 40 5% 30%;
-
-        /* Ring: Matches Primary */
-        --ring: 24 99% 55%;
-        --effort-s: 114 43% 55%;
-        --effort-m: 179 36% 55%;
-        --effort-l: 24 99% 55%;
-        --effort-xl: 11 93% 59%;
-    }
-
-    /* Standard Resets */
     body {
         @apply bg-background text-foreground min-h-screen antialiased;
         @apply transition-colors duration-300;
