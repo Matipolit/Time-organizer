@@ -3,7 +3,7 @@ import {
   createMutation,
   useQueryClient,
 } from "@tanstack/svelte-query";
-import { api, type Task } from "../api";
+import { api, type Task, TaskStatus } from "../api";
 import type { TaskFilters } from "../stores/taskFilters";
 
 // 1. The Key Factory (Prevents typo bugs in cache keys)
@@ -57,7 +57,18 @@ export function useTaskMutation() {
           { queryKey: keys.lists() },
           (old: Task[] | undefined) => {
             if (!old) return old;
-            return old.filter((t) => t.id !== taskId); // Remove the task instantly
+            const updateTasks = (tasks: Task[]): Task[] => {
+              return tasks.map((t) => {
+                if (t.id === taskId) {
+                  return { ...t, status: TaskStatus.DONE };
+                }
+                if (t.children && t.children.length > 0) {
+                  return { ...t, children: updateTasks(t.children) };
+                }
+                return t;
+              });
+            };
+            return updateTasks(old);
           },
         );
 
@@ -77,7 +88,80 @@ export function useTaskMutation() {
 
     uncomplete: createMutation(() => ({
       mutationFn: api.uncompleteTask,
-      onSuccess: () => {
+      onMutate: async (taskId) => {
+        await client.cancelQueries({ queryKey: keys.lists() });
+        const previousTasks = client.getQueryData(keys.lists());
+
+        client.setQueriesData(
+          { queryKey: keys.lists() },
+          (old: Task[] | undefined) => {
+            if (!old) return old;
+            const updateTasks = (tasks: Task[]): Task[] => {
+              return tasks.map((t) => {
+                if (t.id === taskId) {
+                  return { ...t, status: TaskStatus.TODO };
+                }
+                if (t.children && t.children.length > 0) {
+                  return { ...t, children: updateTasks(t.children) };
+                }
+                return t;
+              });
+            };
+            return updateTasks(old);
+          },
+        );
+
+        return { previousTasks };
+      },
+      onError: (err, taskId, context) => {
+        if (context) {
+          client.setQueryData(keys.lists(), context.previousTasks);
+        }
+      },
+      onSettled: () => {
+        client.invalidateQueries({ queryKey: keys.lists() });
+      },
+    })),
+
+    start: createMutation(() => ({
+      mutationFn: api.startTask,
+      onMutate: async (taskId) => {
+        await client.cancelQueries({ queryKey: keys.lists() });
+        const previousTasks = client.getQueryData(keys.lists());
+
+        client.setQueriesData(
+          { queryKey: keys.lists() },
+          (old: Task[] | undefined) => {
+            if (!old) return old;
+            const updateTasks = (tasks: Task[]): Task[] => {
+              return tasks.map((t) => {
+                let newStatus = t.status;
+                if (t.id === taskId) {
+                  newStatus = TaskStatus.IN_PROGRESS;
+                } else if (t.status === TaskStatus.IN_PROGRESS) {
+                  newStatus = TaskStatus.TODO;
+                }
+
+                const updatedChildren =
+                  t.children && t.children.length > 0
+                    ? updateTasks(t.children)
+                    : t.children;
+
+                return { ...t, status: newStatus, children: updatedChildren };
+              });
+            };
+            return updateTasks(old);
+          },
+        );
+
+        return { previousTasks };
+      },
+      onError: (err, taskId, context) => {
+        if (context) {
+          client.setQueryData(keys.lists(), context.previousTasks);
+        }
+      },
+      onSettled: () => {
         client.invalidateQueries({ queryKey: keys.lists() });
       },
     })),

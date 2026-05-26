@@ -11,6 +11,8 @@
         BatteryMedium,
         Battery,
         BatteryWarning,
+        Play,
+        Pause,
     } from "lucide-svelte";
     import type { Task } from "../lib/api";
     import { TaskStatus, EffortLevel } from "../lib/api";
@@ -27,7 +29,7 @@
     }
 
     let {
-        task,
+        task: rawTask,
         send,
         receive,
         onEdit,
@@ -36,17 +38,41 @@
         onToggleExpand,
     }: Props = $props();
 
+    let lastTask: Task;
+    let task = $derived.by(() => {
+        if (rawTask) {
+            lastTask = rawTask;
+            return rawTask;
+        }
+        return lastTask;
+    });
+
     const mutations = useTaskMutation();
 
     const isDone = $derived(task.status === TaskStatus.DONE);
+    const isInProgress = $derived(task.status === TaskStatus.IN_PROGRESS);
     const hasChildren = $derived(task.children && task.children.length > 0);
 
     function toggleCompletion() {
-        if (task.status === TaskStatus.TODO) {
+        if (
+            task.status === TaskStatus.TODO ||
+            task.status === TaskStatus.IN_PROGRESS
+        ) {
             mutations.complete.mutate(task.id!);
         } else {
             mutations.uncomplete.mutate(task.id!);
         }
+    }
+
+    function handleStart(e: MouseEvent) {
+        e.stopPropagation();
+        mutations.start.mutate(task.id!);
+    }
+
+    function handlePause(e: MouseEvent) {
+        e.stopPropagation();
+        // Uses the existing uncomplete endpoint which resets status to TODO
+        mutations.uncomplete.mutate(task.id!);
     }
 
     function handleDelete(e: MouseEvent) {
@@ -103,7 +129,9 @@
 </script>
 
 <div
-    class="p-4 border-2 border-muted-foreground/25 rounded-lg hover:shadow-md transition-shadow bg-card cursor-pointer relative group"
+    class="p-4 border-2 rounded-lg hover:shadow-md transition-shadow bg-card cursor-pointer relative group {isInProgress
+        ? 'border-primary shadow-sm shadow-primary/20'
+        : 'border-muted-foreground/25'}"
     class:opacity-60={isDone}
     in:receive={{ key: task.id }}
     out:send={{ key: task.id }}
@@ -134,6 +162,26 @@
            opacity-100 lg:opacity-0 lg:group-hover:opacity-100
            transition-opacity"
     >
+        {#if isInProgress}
+            <button
+                onclick={handlePause}
+                class="p-3 lg:p-2 bg-background hover:bg-secondary hover:text-secondary-foreground rounded-lg transition-colors"
+                aria-label="Pause task"
+                title="Pause task"
+            >
+                <Pause size={16} />
+            </button>
+        {/if}
+        {#if !isDone && !isInProgress}
+            <button
+                onclick={handleStart}
+                class="p-3 lg:p-2 bg-background hover:bg-primary hover:text-primary-foreground rounded-lg transition-colors"
+                aria-label="Start task"
+                title="Start task"
+            >
+                <Play size={16} />
+            </button>
+        {/if}
         <button
             onclick={handleAddChild}
             class="p-3 lg:p-2 bg-background hover:bg-primary hover:text-primary-foreground rounded-lg transition-colors"

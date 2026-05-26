@@ -9,6 +9,7 @@ export enum TaskType {
 
 export enum TaskStatus {
   TODO = "todo",
+  IN_PROGRESS = "in_progress",
   DONE = "done",
 }
 
@@ -160,6 +161,10 @@ export const api = {
 
   uncompleteTask: async (taskId: number) => {
     return request<Task>(`/tasks/${taskId}/undone`, "PATCH");
+  },
+
+  startTask: async (taskId: number) => {
+    return request<Task>(`/tasks/${taskId}/start`, "PATCH");
   },
 
   // Update a task

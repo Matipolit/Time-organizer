@@ -88,7 +88,11 @@
     function splitFlatTasks(list: Task[]) {
         return {
             undone: flattenTasks(
-                list.filter((t) => t.status !== TaskStatus.DONE),
+                list.filter(
+                    (t) =>
+                        t.status !== TaskStatus.DONE &&
+                        t.status !== TaskStatus.IN_PROGRESS,
+                ),
             ),
             done: flattenTasks(
                 list.filter((t) => t.status === TaskStatus.DONE),
@@ -97,7 +101,11 @@
     }
 
     function filterUndoneTasks(list: Task[]) {
-        return list.filter((t) => t.status !== TaskStatus.DONE);
+        return list.filter(
+            (t) =>
+                t.status !== TaskStatus.DONE &&
+                t.status !== TaskStatus.IN_PROGRESS,
+        );
     }
 
     function filterDoneTasks(list: Task[]) {
@@ -174,6 +182,10 @@
         return expandedTasks.has(taskId);
     }
 
+    const inProgressTask = $derived(
+        tasks?.find((task) => task.status === TaskStatus.IN_PROGRESS),
+    );
+
     // Recursive component to render task and its children
     function renderTaskWithChildren(
         task: Task,
@@ -190,6 +202,28 @@
         return result;
     }
 </script>
+
+{#if inProgressTask}
+    <div
+        class="mb-8 p-6 border-4 border-primary rounded-xl bg-primary/5 shadow-lg"
+    >
+        <h2
+            class="text-2xl font-bold text-primary mb-4 flex items-center gap-2"
+        >
+            <Zap class="text-primary fill-primary" />
+            W trakcie
+        </h2>
+        <TaskCard
+            task={inProgressTask}
+            {send}
+            {receive}
+            onEdit={handleEdit}
+            onAddChild={handleAddChild}
+            expanded={isExpanded(inProgressTask.id!)}
+            onToggleExpand={() => toggleExpand(inProgressTask.id!)}
+        />
+    </div>
+{/if}
 
 <!-- Mobile tab bar -->
 <div class="flex lg:hidden border-b border-muted mb-4">

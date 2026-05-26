@@ -375,6 +375,37 @@ def mark_task_done(task_id: int, current_user: dict = Depends(get_current_user))
         return TaskRead.model_validate(reloaded_task)
 
 
+@app.patch("/tasks/{task_id}/start", response_model=TaskRead)
+def start_task(task_id: int, current_user: dict = Depends(get_current_user)):
+    """
+    Mark task as in progress. Also resets any currently in progress task to TODO.
+    """
+    with Session(engine) as session:
+        # Reset other in-progress tasks
+        statement = select(Task).where(Task.status == TaskStatus.IN_PROGRESS)
+        in_progress_tasks = session.exec(statement).all()
+        for t in in_progress_tasks:
+            t.status = TaskStatus.TODO
+            session.add(t)
+
+        task = session.get(Task, task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
+
+        task.status = TaskStatus.IN_PROGRESS
+        session.add(task)
+        session.commit()
+
+        # Reload with children to avoid detached instance error
+        statement = (
+            select(Task).where(Task.id == task_id).options(get_children_loader())
+        )
+        reloaded_task = session.exec(statement).first()
+        if not reloaded_task:
+            raise HTTPException(status_code=500, detail="Failed to reload task")
+        return TaskRead.model_validate(reloaded_task)
+
+
 @app.patch("/tasks/{task_id}/undone", response_model=TaskRead)
 def mark_task_undone(task_id: int, current_user: dict = Depends(get_current_user)):
     """
