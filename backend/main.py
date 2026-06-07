@@ -1,6 +1,15 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+import markdown_render
+
+
+def render_description(content: Optional[str]) -> Optional[str]:
+    if content is None:
+        return None
+    return markdown_render.render_to_html(content)
+
+
 from auth import (
     create_access_token,
     get_credentials_from_env,
@@ -98,6 +107,7 @@ def create_idea(idea: Idea, current_user: dict = Depends(get_current_user)):
     """
     Create a new idea.
     """
+    idea.description_html = render_description(idea.description)
     with Session(engine) as session:
         session.add(idea)
         session.commit()
@@ -134,6 +144,10 @@ def update_idea(
 
         idea_data = idea_update.model_dump(exclude_unset=True)
         db_idea.sqlmodel_update(idea_data)
+
+        if "description" in idea_data:
+            db_idea.description_html = render_description(db_idea.description)
+
         session.add(db_idea)
         session.commit()
         session.refresh(db_idea)
@@ -171,6 +185,7 @@ def convert_idea_to_task(
         new_task = Task(
             title=db_idea.title,
             description=db_idea.description,
+            description_html=db_idea.description_html,
             task_type=task_type,
             status=TaskStatus.TODO,
             created_at=datetime.now(),
@@ -207,6 +222,7 @@ def create_task(task: Task, current_user: dict = Depends(get_current_user)):
 
     task.status = TaskStatus.TODO
     task.created_at = datetime.now()
+    task.description_html = render_description(task.description)
 
     with Session(engine) as session:
         session.add(task)
@@ -294,6 +310,9 @@ def update_task(
         task_data = task_update.model_dump(exclude_unset=True)
 
         db_task.sqlmodel_update(task_data)
+
+        if "description" in task_data:
+            db_task.description_html = render_description(db_task.description)
 
         session.add(db_task)
         session.commit()

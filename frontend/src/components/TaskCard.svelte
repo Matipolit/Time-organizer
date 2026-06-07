@@ -126,6 +126,13 @@
             onToggleExpand();
         }
     }
+
+    function handleDescriptionClick(e: MouseEvent) {
+        // Prevent card completion if a link is clicked
+        if ((e.target as HTMLElement).tagName === "A") {
+            e.stopPropagation();
+        }
+    }
 </script>
 
 <div
@@ -216,7 +223,17 @@
             </span>
         {/if}
     </h3>
-    {#if task.description}
+    {#if task.description_html}
+        <div
+            class="text-foreground/80 mt-2 prose prose-sm max-w-none"
+            onclick={handleDescriptionClick}
+            onkeydown={(e) => e.key === "Enter" && handleDescriptionClick}
+            role="button"
+            tabindex="0"
+        >
+            {@html task.description_html}
+        </div>
+    {:else if task.description}
         <p class="text-foreground/80 mt-2">
             {task.description}
         </p>

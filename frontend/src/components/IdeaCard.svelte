@@ -1,10 +1,5 @@
 <script lang="ts">
-    import {
-        Pencil,
-        Trash2,
-        Zap,
-        Calendar,
-    } from "lucide-svelte";
+    import { Pencil, Trash2, Zap, Calendar } from "lucide-svelte";
     import type { Idea } from "../lib/api";
     import { useIdeaMutation } from "../lib/queries/ideas";
 
@@ -35,8 +30,14 @@
     }
 
     const formattedDate = $derived(
-        idea.created_at ? new Date(idea.created_at).toLocaleDateString() : ""
+        idea.created_at ? new Date(idea.created_at).toLocaleDateString() : "",
     );
+
+    function handleDescriptionClick(e: MouseEvent) {
+        if ((e.target as HTMLElement).tagName === "A") {
+            e.stopPropagation();
+        }
+    }
 </script>
 
 <div
@@ -77,7 +78,17 @@
     <h3 class="text-md font-semibold pr-32">
         {idea.title}
     </h3>
-    {#if idea.description}
+    {#if idea.description_html}
+        <div
+            class="text-foreground/80 mt-2 prose prose-sm max-w-none"
+            onclick={handleDescriptionClick}
+            onkeydown={(e) => e.key === "Enter" && handleDescriptionClick}
+            role="button"
+            tabindex="0"
+        >
+            {@html idea.description_html}
+        </div>
+    {:else if idea.description}
         <p class="text-foreground/80 mt-2">
             {idea.description}
         </p>

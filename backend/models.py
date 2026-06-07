@@ -33,6 +33,7 @@ class Task(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str = Field(index=True)
     description: Optional[str] = None
+    description_html: Optional[str] = None
 
     task_type: TaskType = Field(index=True)
     status: TaskStatus = Field(default=TaskStatus.TODO)
@@ -77,6 +78,7 @@ class Idea(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str = Field(index=True)
     description: Optional[str] = None
+    description_html: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)
 
 
@@ -89,6 +91,7 @@ class TaskRead(SQLModel):
     id: int
     title: str
     description: Optional[str] = None
+    description_html: Optional[str] = None
     task_type: TaskType
     status: TaskStatus
     scheduled_date: Optional[datetime] = None

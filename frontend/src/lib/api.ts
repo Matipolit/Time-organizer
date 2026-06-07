@@ -24,6 +24,7 @@ export interface Task {
   id?: number; // Optional because new tasks don't have an ID yet
   title: string;
   description?: string;
+  description_html?: string;
   task_type: TaskType;
   status: TaskStatus;
 
@@ -54,6 +55,7 @@ export interface Idea {
   id?: number;
   title: string;
   description?: string;
+  description_html?: string;
   created_at?: string;
 }
 
