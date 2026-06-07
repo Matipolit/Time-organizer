@@ -28,8 +28,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'pnpm'
+          node-version: "22"
+          cache: "pnpm"
           cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install dependencies
@@ -47,16 +47,44 @@ jobs:
           path: frontend/dist
           retention-days: 1
 
+  build-backend:
+    name: Build Backend (Rust Extension)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: x86_64
+          args: --release --out dist --find-interpreter
+          working-directory: backend/markdown-render
+          manylinux: auto
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-wheels
+          path: backend/markdown-render/dist/*.whl
+          retention-days: 1
+
   deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
-    needs: build-frontend
+    needs: [build-frontend, build-backend]
     steps:
       - name: Download frontend artifacts
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
           path: frontend-dist
+
+      - name: Download backend wheels
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-wheels
+          path: backend-wheels
 
       - name: Setup SSH key
         run: |
@@ -67,6 +95,9 @@ jobs:
 
       - name: Deploy backend
         run: |
+          # Upload the wheel first
+          scp -i ~/.ssh/deploy_key backend-wheels/*.whl ${{ env.VPS_USER }}@${{ secrets.VPS_HOST }}:/tmp/
+
           ssh -i ~/.ssh/deploy_key ${{ env.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
 
@@ -80,12 +111,21 @@ jobs:
             source .venv/bin/activate
             pip install -q -r requirements.txt
 
+            echo "==> Installing markdown-render wheel..."
+            pip install -q --force-reinstall /tmp/markdown_render*.whl
+            rm /tmp/markdown_render*.whl
+
             echo "==> Restarting backend service..."
             sudo systemctl restart ${{ env.SYSTEMD_SERVICE }}
 
             echo "==> Checking service status..."
             sleep 2
-            sudo systemctl is-active --quiet ${{ env.SYSTEMD_SERVICE }} && echo "Service is running!" || (echo "Service failed to start!" && exit 1)
+            if ! sudo systemctl is-active --quiet ${{ env.SYSTEMD_SERVICE }}; then
+                echo "Service failed to start! Recent logs:"
+                sudo journalctl -u ${{ env.SYSTEMD_SERVICE }} -n 20 --no-pager
+                exit 1
+            fi
+            echo "Service is running!"
           EOF
 
       - name: Deploy frontend
