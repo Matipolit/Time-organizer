@@ -54,11 +54,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            backend/markdown-render/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('backend/markdown-render/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           target: x86_64
-          args: --release --out dist --find-interpreter
+          # Only build for Python 3.12 to match the VPS, significantly reducing build time
+          args: --release --out dist -i python3.12
           working-directory: backend/markdown-render
           manylinux: auto
 
@@ -111,10 +125,21 @@ jobs:
             source .venv/bin/activate
             pip install -q -r requirements.txt
 
-            echo "==> Installing markdown-render wheel..."
-            pip install -q --force-reinstall /tmp/markdown_render*.whl
-            rm /tmp/markdown_render*.whl
+            echo "==> Detecting Python version and installing matching wheel..."
+            # Extract major.minor (e.g., 3.12 -> 312)
+            PY_VER=$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')
 
+            # Find and install the matching wheel
+            WHEEL=$(ls /tmp/markdown_render*-cp${PY_VER}-*.whl | head -n 1)
+            if [ -f "$WHEEL" ]; then
+                pip install -q --force-reinstall "$WHEEL"
+                echo "Successfully installed: $WHEEL"
+            else
+                echo "Error: No matching wheel found for Python $PY_VER in /tmp/"
+                ls /tmp/markdown_render*.whl
+                exit 1
+            fi
+            rm /tmp/markdown_render*.whl
             echo "==> Restarting backend service..."
             sudo systemctl restart ${{ env.SYSTEMD_SERVICE }}
 
