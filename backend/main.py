@@ -338,8 +338,8 @@ def mark_task_done(task_id: int, current_user: dict = Depends(get_current_user))
 
         now = datetime.now()
 
-        # LOGIC 1: Deadlines (Thesis/Uni)
-        if task.task_type == TaskType.DEADLINE:
+        # LOGIC 1: Deadlines (Thesis/Uni) AND Todo
+        if task.task_type in [TaskType.DEADLINE, TaskType.TODO]:
             task.status = TaskStatus.DONE
             task.last_completed_at = now
 

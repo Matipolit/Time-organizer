@@ -10,6 +10,7 @@ class TaskType(str, Enum):
     DEADLINE = "deadline"
     CHORE = "chore"
     STREAK = "streak"
+    TODO = "todo"
 
 
 class TaskStatus(str, Enum):

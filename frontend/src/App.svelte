@@ -71,10 +71,10 @@
     <Login />
 {:else}
     <main
-        class="min-h-screen bg-background text-foreground transition-colors duration-300"
+        class="h-screen flex flex-col bg-background text-foreground transition-colors duration-300 overflow-hidden"
     >
         <header
-            class="flex justify-between items-center w-full gap-4 bg-muted p-4"
+            class="flex justify-between items-center w-full gap-4 bg-muted p-4 shrink-0"
         >
             <div class="flex items-center gap-2">
                 {#if page !== "main"}
@@ -95,7 +95,7 @@
                 </Button>
             </div>
         </header>
-        <div class="pl-2 pr-2">
+        <div class="flex-1 overflow-hidden pl-2 pr-2">
             <QueryClientProvider client={queryClient}>
                 {#if page === "main"}
                     <Interface />

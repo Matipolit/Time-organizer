@@ -25,7 +25,7 @@
                 onSuccess: () => {
                     quickAddTitle = "";
                 },
-            }
+            },
         );
     }
 
@@ -49,12 +49,12 @@
             },
             {
                 onSuccess: closeEdit,
-            }
+            },
         );
     }
 </script>
 
-<div class="space-y-6 max-w-4xl mx-auto pb-10">
+<div class="h-full overflow-y-auto space-y-6 max-w-4xl mx-auto pb-10 pr-2">
     <div class="flex items-center gap-3 mb-2">
         <Lightbulb class="text-primary" size={28} />
         <h2 class="text-2xl font-bold">Skrzynka Pomysłów</h2>
@@ -93,10 +93,16 @@
             Błąd podczas ładowania pomysłów.
         </p>
     {:else if ideas.length === 0}
-        <div class="text-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed border-muted">
+        <div
+            class="text-center py-20 bg-muted/30 rounded-2xl border-2 border-dashed border-muted"
+        >
             <Lightbulb class="mx-auto mb-4 text-muted-foreground" size={48} />
-            <p class="text-xl text-muted-foreground">Nie masz jeszcze żadnych pomysłów.</p>
-            <p class="text-muted-foreground">Zapisz coś, co chodzi Ci po głowie!</p>
+            <p class="text-xl text-muted-foreground">
+                Nie masz jeszcze żadnych pomysłów.
+            </p>
+            <p class="text-muted-foreground">
+                Zapisz coś, co chodzi Ci po głowie!
+            </p>
         </div>
     {:else}
         <div class="grid gap-4">
@@ -127,7 +133,9 @@
             <h2 class="text-xl font-bold mb-4">Edytuj pomysł</h2>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium mb-1" for="title">Tytuł</label>
+                    <label class="block text-sm font-medium mb-1" for="title"
+                        >Tytuł</label
+                    >
                     <input
                         id="title"
                         bind:value={editingIdea.title}
@@ -135,7 +143,9 @@
                     />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1" for="desc">Opis</label>
+                    <label class="block text-sm font-medium mb-1" for="desc"
+                        >Opis</label
+                    >
                     <textarea
                         id="desc"
                         bind:value={editingIdea.description}
@@ -143,8 +153,13 @@
                     ></textarea>
                 </div>
                 <div class="flex justify-end gap-2 mt-6">
-                    <Button variant="outline" onclick={closeEdit}>Anuluj</Button>
-                    <Button variant="primary" onclick={saveEdit} disabled={mutations.update.isPending}>
+                    <Button variant="outline" onclick={closeEdit}>Anuluj</Button
+                    >
+                    <Button
+                        variant="primary"
+                        onclick={saveEdit}
+                        disabled={mutations.update.isPending}
+                    >
                         Zapisz zmiany
                     </Button>
                 </div>

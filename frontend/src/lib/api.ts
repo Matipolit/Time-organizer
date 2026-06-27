@@ -5,6 +5,7 @@ export enum TaskType {
   DEADLINE = "deadline",
   CHORE = "chore",
   STREAK = "streak",
+  TODO = "todo",
 }
 
 export enum TaskStatus {

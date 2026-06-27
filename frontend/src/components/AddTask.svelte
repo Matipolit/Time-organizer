@@ -30,7 +30,7 @@
     function handleSubmit() {
         const taskData: Partial<Task> = {
             title,
-            description: description || undefined,
+            description: description, // Allow empty string to clear description
             task_type: taskType,
             status: task?.status ?? TaskStatus.TODO,
             scheduled_date: scheduledDate || undefined,
@@ -67,7 +67,6 @@
             });
         }
     }
-
 </script>
 
 <div
@@ -150,6 +149,7 @@
                     bind:value={taskType}
                     class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                 >
+                    <option value={TaskType.TODO}>Zadanie</option>
                     <option value={TaskType.DEADLINE}>Deadline</option>
                     <option value={TaskType.CHORE}>Powtarzalny obowiązek</option
                     >
@@ -176,7 +176,7 @@
                 </select>
             </div>
 
-            {#if taskType === TaskType.DEADLINE}
+            {#if taskType === TaskType.DEADLINE || taskType === TaskType.TODO}
                 <div>
                     <label for="scheduledDate" class="block font-semibold mb-2">
                         Miękki deadline
@@ -188,7 +188,8 @@
                         class="w-full p-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                 </div>
-
+            {/if}
+            {#if taskType === TaskType.DEADLINE}
                 <div>
                     <label for="deadline" class="block font-semibold mb-2">
                         Deadline

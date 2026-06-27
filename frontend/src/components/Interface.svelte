@@ -18,8 +18,8 @@
     let showAddTask = $state(false);
 </script>
 
-<div class="">
-    <div class="mb-2 flex justify-between items-center">
+<div class="h-full flex flex-col overflow-hidden">
+    <div class="mb-2 flex justify-between items-center shrink-0">
         <div
             class="flex gap-2 pt-3 pb-3 justify-between w-full border-solid border-b-2 border-muted-foreground/50"
         >
@@ -59,13 +59,15 @@
             </Button>
         </div>
     </div>
-    {#if viewMode == "dashboard"}
-        <Dashboard />
-    {:else if viewMode == "calendar"}
-        <CalendarView />
-    {:else if viewMode == "ideas"}
-        <IdeasView />
-    {/if}
+    <div class="flex-1 overflow-hidden">
+        {#if viewMode == "dashboard"}
+            <Dashboard />
+        {:else if viewMode == "calendar"}
+            <CalendarView />
+        {:else if viewMode == "ideas"}
+            <IdeasView />
+        {/if}
+    </div>
 </div>
 
 {#if showAddTask}
